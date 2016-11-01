@@ -8,6 +8,7 @@ using namespace std;
 
 const int numberOfVertexes = 4;
 vector<int**> matrixes;
+int** wayMatrix = new int*[numberOfVertexes];
 int m = 1;
 
 void readMatrix(int** inputArray, const int size)
@@ -30,7 +31,19 @@ void printMatrix(int** outputArray, const int size)
 void init2Dparray(int** arr, const int& size)
 {
 	for (int i = 0; i < size; i++)
+	{
 		arr[i] = new int[size];
+		for (int j = 0; j < size; j++)
+			arr[i][j] = 0;
+	}
+}
+
+void initWayMatrix(int** inputArray, int** outputArray, const int& size)
+{
+	for (int i = 0; i < size; i++)
+		for (int j = 0; j < size; j++)
+			if (inputArray[i][j] != infinity && inputArray[i][j] != 0) outputArray[i][j] = j + 1;
+			else outputArray[i][j] = 0;
 }
 
 void countMatrix()
@@ -43,7 +56,11 @@ void countMatrix()
 
 	for (int i = 0; i < numberOfVertexes; i++)
 		for (int j = 0; j < numberOfVertexes; j++)
+		{
 			temp_matrix[i][j] = min(matrixes[m - 1][i][z] + matrixes[m - 1][z][j], matrixes[m - 1][i][j]);
+			if (temp_matrix[i][j] < matrixes[m - 1][i][j] && wayMatrix[i][j] > m) wayMatrix[i][j] = m;
+		}
+			
 	
 	matrixes.push_back(temp_matrix);
 	m++;
@@ -65,6 +82,15 @@ int main()
 
 	matrixes.push_back(inputMatrix);
 
+	init2Dparray(wayMatrix, numberOfVertexes);
+	initWayMatrix(inputMatrix, wayMatrix, numberOfVertexes);
+
+	cout << endl;
+
+	printMatrix(wayMatrix, numberOfVertexes);
+
+	cout << endl;
+
 	//f(x)
 	//D(m, ij) = min(d(m-1, im) + d(m-1, mj), d(m-1, ij))
 
@@ -77,5 +103,9 @@ int main()
 		cout  << "________" << endl << endl;
 	}
 
+	printMatrix(wayMatrix, numberOfVertexes);
+
+	cout << endl;
+
 	return 0;
-}
+}	
