@@ -42,8 +42,9 @@ void initWayMatrix(int** inputArray, int** outputArray, const int& size)
 {
 	for (int i = 0; i < size; i++)
 		for (int j = 0; j < size; j++)
-			if (inputArray[i][j] != infinity && inputArray[i][j] != 0) outputArray[i][j] = j + 1;
-			else outputArray[i][j] = 0;
+			if (inputArray[i][j] != infinity && inputArray[i][j] != 0) outputArray[i][j] = j;
+			else outputArray[i][j] = -1;	//-1 - в связи с тем, что в матрице путей хранятся индексы вершин, в которые можно перейти
+											//поэтому 0 означает всякую вершину с индексом 0. -1 означает невозможность перехода.
 }
 
 void countMatrix()
@@ -58,18 +59,43 @@ void countMatrix()
 		for (int j = 0; j < numberOfVertexes; j++)
 		{
 			temp_matrix[i][j] = min(matrixes[m - 1][i][z] + matrixes[m - 1][z][j], matrixes[m - 1][i][j]);
-			if (temp_matrix[i][j] < matrixes[m - 1][i][j] && wayMatrix[i][j] > m) wayMatrix[i][j] = m;
+			if (temp_matrix[i][j] < matrixes[m - 1][i][j]) 
+				wayMatrix[i][j] = z;
 		}
 			
-	
 	matrixes.push_back(temp_matrix);
 	m++;
 
 	countMatrix();
 }
 
+//Алгоритм вывода пути согласно методу Флойда.
+//Например, если нам надо попасть из v1 в v2, 
+//то мы обращаемся к wayMatrix[0][1] и получаем хранящееся значение k. 
+//теперь переходим wayMatrix[k][1].
+//Выполняем до тех пор пока не дойдём до нашего пункта.
+void printWays()
+{
+	for (int i = 0; i < numberOfVertexes; i++)
+		for (int j = 0; j < numberOfVertexes; j++)
+		{
+			int k = wayMatrix[i][j];
+			if (k != -1)
+			{
+				cout << i + 1;
+				while (k != -1)
+				{
+					cout << " -> " << k + 1;
+					k = wayMatrix[k][j];
+				}
+				cout << endl;
+			}
+		}
+}
+
 int main()
 {
+	//Пользовательский ввод.
 	//int** inputMatrix = new int*[numberOfVertexes];
 	//init2Dparray(inputMatrix, numberOfVertexes);
 	//readMatrix(inputMatrix, numberOfVertexes);
@@ -103,9 +129,13 @@ int main()
 		cout  << "________" << endl << endl;
 	}
 
-	printMatrix(wayMatrix, numberOfVertexes);
+	//printMatrix(wayMatrix, numberOfVertexes);
 
 	cout << endl;
+
+	cout << "All possible ways with the least costs" << endl;
+
+	printWays();
 
 	return 0;
 }	
